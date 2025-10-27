@@ -7,50 +7,85 @@ char tablero[3][3] = {
     {'7', '8', '9'}
 };
 
-// Función para mostrar el tablero
+// Muestra el tablero en pantalla
 void mostrarTablero() {
     cout << "\n";
-    cout << " " << tablero[0][0] << " | " << tablero[0][1] << " | " << tablero[0][2] << "\n";
-    cout << "---|---|---\n";
-    cout << " " << tablero[1][0] << " | " << tablero[1][1] << " | " << tablero[1][2] << "\n";
-    cout << "---|---|---\n";
-    cout << " " << tablero[2][0] << " | " << tablero[2][1] << " | " << tablero[2][2] << "\n";
+    for (int i = 0; i < 3; i++) { // Recorre filas
+        cout << " " << tablero[i][0] << " | " << tablero[i][1] << " | " << tablero[i][2] << "\n"; // Muestra la fila
+        if (i < 2) cout << "---|---|---\n"; // Línea divisoria
+    }
     cout << "\n";
 }
 
-// Función que coloca una marca en el tablero
+// Marca una casilla con X o O si es válida
 bool marcarCasilla(char turno, int eleccion) {
-    // Recorre el tablero buscando la casilla elegida
     for (int i = 0; i < 3; i++) { // Recorre filas
         for (int j = 0; j < 3; j++) { // Recorre columnas
-            if (tablero[i][j] == eleccion + '0') { // Si la casilla coincide con el número elegido
-                tablero[i][j] = turno; // Coloca la marca (X o O)
-                return true; // Indica que la jugada fue válida
+            if (tablero[i][j] == eleccion + '0') { // Si el número coincide
+                tablero[i][j] = turno; // Coloca la marca
+                return true; // Jugada válida
             }
         }
     }
-    return false; // Si no se encontró la casilla, jugada inválida
+    return false; // Jugada inválida
+}
+
+// Verifica si hay un ganador o empate
+char verificarGanador() {
+    // Verifica filas
+    for (int i = 0; i < 3; i++)
+        if (tablero[i][0] == tablero[i][1] && tablero[i][1] == tablero[i][2])
+            return tablero[i][0]; // Devuelve el ganador
+
+    // Verifica columnas
+    for (int j = 0; j < 3; j++)
+        if (tablero[0][j] == tablero[1][j] && tablero[1][j] == tablero[2][j])
+            return tablero[0][j];
+
+    // Verifica diagonales
+    if (tablero[0][0] == tablero[1][1] && tablero[1][1] == tablero[2][2])
+        return tablero[0][0];
+    if (tablero[0][2] == tablero[1][1] && tablero[1][1] == tablero[2][0])
+        return tablero[0][2];
+
+    // Verifica empate (si todas las casillas están ocupadas)
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            if (tablero[i][j] != 'X' && tablero[i][j] != 'O')
+                return ' '; // Aún hay espacios
+
+    return 'E'; // Empate
 }
 
 int main() {
-    char turno = 'X'; // Comienza el jugador X
-    int eleccion; // Variable para guardar el número elegido
+    char turno = 'X'; // Inicia el jugador X
+    int eleccion; // Guarda la casilla elegida
+    char resultado = ' '; // Guarda el resultado del juego
 
-    // Bucle infinito para permitir varias jugadas
-    while (true) {
+    while (resultado == ' ') { // Mientras no haya ganador ni empate
         mostrarTablero(); // Muestra el tablero
         cout << "Turno del jugador " << turno << ". Elige una casilla (1-9): ";
-        cin >> eleccion; // Recibe la casilla
+        cin >> eleccion; // Pide la jugada
 
-        // Valida si la jugada es válida
-        if (!marcarCasilla(turno, eleccion)) {
-            cout << "Casilla inválida. Intenta de nuevo.\n"; // Mensaje de error
-            continue; // Vuelve a pedir la jugada
+        if (!marcarCasilla(turno, eleccion)) { // Si la jugada no es válida
+            cout << "Casilla inválida. Intenta de nuevo.\n"; // Mensaje
+            continue; // Vuelve a pedir jugada
         }
 
-        // Cambia el turno
-        turno = (turno == 'X') ? 'O' : 'X';
+        resultado = verificarGanador(); // Comprueba si hay ganador
+
+        // Cambia el turno si no ha terminado
+        if (resultado == ' ')
+            turno = (turno == 'X') ? 'O' : 'X';
     }
+
+    mostrarTablero(); // Muestra el tablero final
+
+    // Muestra el resultado final
+    if (resultado == 'E')
+        cout << "¡Empate!\n";
+    else
+        cout << "¡Felicidades! El jugador " << resultado << " ha ganado.\n";
 
     return 0;
 }
