@@ -126,7 +126,7 @@ int main() {
             // Si el jugador actual forma 4, gana
             if (hayGanador(board, simbolos[turno])) {
                 dibujarTablero(board);
-                std::cout << "¡Jugador " << (turno+1) << " (" << simbolos[turno] << ") gana!\n";
+                std::cout << "Jugador " << (turno+1) << " (" << simbolos[turno] << ") gana\n";
                 terminado = true;
                 continue;
             }
@@ -144,12 +144,12 @@ int main() {
         }
 
         // Preguntar si desean jugar otra partida
-        std::cout << "¿Desean jugar otra partida? (s/n): ";
+        std::cout << "Jugar de nuevo (s/n): ";
         char resp;
         std::cin >> resp;
         if (resp != 's' && resp != 'S') jugarOtra = false;
     }
 
-    std::cout << "Gracias por jugar. ¡Hasta luego!\n";
+    std::cout << "Gracias por jugar. Hasta luego!\n";
     return 0;
 }
