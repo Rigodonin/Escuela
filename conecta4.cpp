@@ -1,6 +1,6 @@
-// conecta4_vA_part3.cpp
-// Versión A - Parte 3
-// Añade comprobación de victoria horizontal y vertical, y detección de tablero lleno (empate).
+// conecta4_vA_part4.cpp
+// Versión A - Parte 4
+// Añade detección diagonal ascendente y descendente.
 
 #include <iostream>
 #include <vector>
@@ -31,7 +31,6 @@ bool colocarFicha(std::vector<std::vector<char>>& board, int columna, char ficha
     return false;
 }
 
-// Comprueba si hay 4 en línea horizontalmente
 bool hay4Horizontal(const std::vector<std::vector<char>>& board, char ficha) {
     for (int r = 0; r < ROWS; ++r) {
         int conteo = 0;
@@ -43,13 +42,40 @@ bool hay4Horizontal(const std::vector<std::vector<char>>& board, char ficha) {
     return false;
 }
 
-// Comprueba si hay 4 en línea verticalmente
 bool hay4Vertical(const std::vector<std::vector<char>>& board, char ficha) {
     for (int c = 0; c < COLS; ++c) {
         int conteo = 0;
         for (int r = 0; r < ROWS; ++r) {
             conteo = (board[r][c] == ficha) ? conteo + 1 : 0;
             if (conteo >= 4) return true;
+        }
+    }
+    return false;
+}
+
+// Diagonal descendente (\) - desde arriba izquierda hacia abajo derecha
+bool hay4DiagDesc(const std::vector<std::vector<char>>& board, char ficha) {
+    for (int r = 0; r <= ROWS - 4; ++r) {
+        for (int c = 0; c <= COLS - 4; ++c) {
+            bool ok = true;
+            for (int k = 0; k < 4; ++k) {
+                if (board[r + k][c + k] != ficha) { ok = false; break; }
+            }
+            if (ok) return true;
+        }
+    }
+    return false;
+}
+
+// Diagonal ascendente (/) - desde abajo izquierda hacia arriba derecha
+bool hay4DiagAsc(const std::vector<std::vector<char>>& board, char ficha) {
+    for (int r = 3; r < ROWS; ++r) {
+        for (int c = 0; c <= COLS - 4; ++c) {
+            bool ok = true;
+            for (int k = 0; k < 4; ++k) {
+                if (board[r - k][c + k] != ficha) { ok = false; break; }
+            }
+            if (ok) return true;
         }
     }
     return false;
@@ -85,14 +111,16 @@ int main() {
             continue;
         }
 
-        // Comprobaciones de victoria
-        if (hay4Horizontal(board, simbolos[turno]) || hay4Vertical(board, simbolos[turno])) {
+        // Comprobar todas las direcciones
+        if (hay4Horizontal(board, simbolos[turno]) ||
+            hay4Vertical(board, simbolos[turno]) ||
+            hay4DiagDesc(board, simbolos[turno]) ||
+            hay4DiagAsc(board, simbolos[turno])) {
             dibujarTablero(board);
             std::cout << "¡Jugador " << (turno+1) << " (" << simbolos[turno] << ") gana!\n";
             break;
         }
 
-        // Empate
         if (tableroLleno(board)) {
             dibujarTablero(board);
             std::cout << "Empate. Tablero lleno.\n";
